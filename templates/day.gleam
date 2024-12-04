@@ -4,7 +4,7 @@ import simplifile
 
 fn input() -> String {
   let assert Ok(input) = simplifile.read("input.txt")
-  input
+  input |> string.trim
 }
 
 pub fn part1(input: String) -> Int {

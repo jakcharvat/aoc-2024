@@ -1,3 +1,4 @@
+import gleam/string
 import gleeunit
 import gleeunit/should
 import simplifile
@@ -6,7 +7,7 @@ import day__DAY_NUM__
 
 fn input() -> String {
   let assert Ok(input) = simplifile.read("small-in.txt")
-  input
+  input |> string.trim
 }
 
 pub fn main() {

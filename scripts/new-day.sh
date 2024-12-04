@@ -56,13 +56,18 @@ if ! gleam new "$day_name" --skip-git --skip-github > "$temp_output" 2>&1; then
     exit 1
 fi
 
+add_dependency() {
+    local dep="$1"
+    if ! gleam add $dep > "$temp_output" 2>&1; then
+        error "🚨 Failed to add $dep dependency:"
+        cat "$temp_output"
+        rm "$temp_input" "$temp_output"
+        exit 1
+    fi
+}
+
 cd "$day_name"
-if ! gleam add simplifile --dev > "$temp_output" 2>&1; then
-    error "🚨 Failed to simplifile add dependency:"
-    cat "$temp_output"
-    rm "$temp_input" "$temp_output"
-    exit 1
-fi
+add_dependency simplifile
 cd ..
 
 rm "$day_name/README.md"
