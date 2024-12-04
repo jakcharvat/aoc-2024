@@ -1,0 +1,5 @@
+use flake
+
+# Get your session cookie from adventofcode.com
+# Browser devtools -> Storage -> Cookies
+export AOC_SESSION=your_session_cookie_here
