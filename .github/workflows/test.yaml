@@ -1,0 +1,30 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26'
+          gleam-version: '1.6.2'
+
+      - name: Run tests
+        run: |
+          for d in day*; do
+            if [ -d "$d" ]; then
+              echo "Testing $d"
+              cd "$d"
+              gleam test || exit 1
+              cd ..
+            fi
+          done
