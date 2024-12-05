@@ -2,12 +2,13 @@
 
 set -euo pipefail
 
-# Colors and formatting
 BOLD='\033[1m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+GREY='\033[0;90m'
+LIGHT_GREY='\033[0;37m'
+NC='\033[0m'
 
 info() { echo -e "${BLUE}$1${NC}"; }
 success() { echo -e "${GREEN}$1${NC}"; }
@@ -35,9 +36,14 @@ temp_input=$(mktemp)
 temp_output=$(mktemp)
 
 # Download input first
-curl --fail --silent --cookie "session=${AOC_SESSION}" \
+if ! curl --fail --silent --show-error --cookie "session=${AOC_SESSION}" \
      --output "$temp_input" \
-     "https://adventofcode.com/2024/day/$1/input"
+     "https://adventofcode.com/2024/day/$1/input" 2> "$temp_output"; then
+    error "🌐 Network error: Failed to download input:"
+    echo -e "${GREY}$(cat "$temp_output")${NC}" >&2
+    rm "$temp_input" "$temp_output"
+    exit 1
+fi
 
 if [ $? -ne 0 ]; then
     error "🌐 Network error: Failed to download input"
@@ -51,7 +57,7 @@ info "🛠️  Creating Gleam project ${BOLD}$day_name${NC}..."
 # Run gleam and capture output to temp file
 if ! gleam new "$day_name" --skip-git --skip-github > "$temp_output" 2>&1; then
     error "🚨 Failed to create Gleam project:"
-    cat "$temp_output"
+    echo -e "${GREY}$(cat "$temp_output")${NC}" >&2
     rm "$temp_input" "$temp_output"
     exit 1
 fi
@@ -60,7 +66,7 @@ add_dependency() {
     local dep="$1"
     if ! gleam add $dep > "$temp_output" 2>&1; then
         error "🚨 Failed to add $dep dependency:"
-        cat "$temp_output"
+        echo -e "${GREY}$(cat "$temp_output")${NC}" >&2
         rm "$temp_input" "$temp_output"
         exit 1
     fi
@@ -78,4 +84,5 @@ cp templates/day.gleam "$day_name/src/day${day_num}.gleam"
 sed "s/__DAY_NUM__/$day_num/g" templates/day_test.gleam > "$day_name/test/day${day_num}_test.gleam"
 
 rm "$temp_output"
-success "🎄 All ready for day $day_num! Let's solve some puzzles! ⭐"
+success "\n🎄 All ready for day $day_num! Let's solve some puzzles! ⭐"
+echo -e "   ${GREY}.. Problem available at: ${LIGHT_GREY}${BOLD}https://adventofcode.com/2024/day/$1${NC}"
