@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   test:
@@ -15,8 +15,19 @@ jobs:
       - name: Set up Erlang
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '26'
-          gleam-version: '1.6.2'
+          otp-version: "26"
+          gleam-version: "1.6.2"
+
+      - name: Compile all projects
+        run: |
+          for d in day*; do
+            if [ -d "$d" ]; then
+              echo "Compiling $d"
+              cd "$d"
+              gleam build || exit 1
+              cd ..
+            fi
+          done
 
       - name: Run tests
         run: |
