@@ -11,8 +11,8 @@ LIGHT_GREY='\033[0;37m'
 NC='\033[0m'
 
 info() { echo -e "${BLUE}$1${NC}"; }
-success() { echo -e "${GREEN}$1${NC}"; }
-error() { echo -e "${RED}$1${NC}" >&2; }
+success() { echo -e "\n${GREEN}$1${NC}"; }
+error() { echo -e "\n${RED}$1${NC}" >&2; }
 
 if [ $# -ne 1 ] || ! [[ $1 =~ ^[0-9]+$ ]]; then
     error "🎅 Ho ho ho! Please provide a day number"
@@ -84,5 +84,5 @@ cp templates/day.gleam "$day_name/src/day${day_num}.gleam"
 sed "s/__DAY_NUM__/$day_num/g" templates/day_test.gleam > "$day_name/test/day${day_num}_test.gleam"
 
 rm "$temp_output"
-success "\n🎄 All ready for day $day_num! Let's solve some puzzles! ⭐"
+success "🎄 All ready for day $day_num! Let's solve some puzzles! ⭐"
 echo -e "   ${GREY}.. Problem available at: ${LIGHT_GREY}${BOLD}https://adventofcode.com/2024/day/$1${NC}"
