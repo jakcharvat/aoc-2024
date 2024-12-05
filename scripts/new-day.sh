@@ -2,17 +2,25 @@
 
 set -euo pipefail
 
-BOLD='\033[1m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-GREY='\033[0;90m'
-LIGHT_GREY='\033[0;37m'
 NC='\033[0m'
+BOLD='\033[1m'
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+LIGHT_GREY='\033[0;37m'
+GREY='\033[0;90m'
 
 info() { echo -e "${BLUE}$1${NC}"; }
 success() { echo -e "\n${GREEN}$1${NC}"; }
 error() { echo -e "\n${RED}$1${NC}" >&2; }
+
+repo_root=$(git rev-parse --show-toplevel)
+current_dir=$(pwd)
+if [ "$repo_root" != "$current_dir" ]; then
+    error "🏠 Must be run from repository root"
+    exit 1
+fi
 
 if [ $# -ne 1 ] || ! [[ $1 =~ ^[0-9]+$ ]]; then
     error "🎅 Ho ho ho! Please provide a day number"
