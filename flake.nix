@@ -19,6 +19,8 @@
           packages = with pkgs; [
             gleam
             beamPackages.erlang
+            rebar3
+
             new-day
             next-day
           ];
