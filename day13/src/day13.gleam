@@ -43,7 +43,7 @@ fn parse_button(button: String) {
   atto.pure(Button(x, y))
 }
 
-fn parse_arcade() {
+fn parse_arcade(part2: Bool) {
   use <- atto.label("arcade")
   use a <- atto.do(parse_button("A"))
   use b <- atto.do(parse_button("B"))
@@ -52,7 +52,12 @@ fn parse_arcade() {
   use <- atto.drop(text.match(", Y="))
   use y <- atto.do(text_util.decimal() |> text_util.ws)
 
-  atto.pure(Arcade(a, b, x, y))
+  let add = case part2 {
+    True -> 10_000_000_000_000
+    False -> 0
+  }
+
+  atto.pure(Arcade(a, b, x + add, y + add))
 }
 
 fn parse(s: String, p: atto.Parser(a, String, String, Nil, c)) {
@@ -73,16 +78,43 @@ fn grab(arcade: Arcade) -> Result(Int, Nil) {
 }
 
 pub fn part1(input: String) -> Int {
-  let tasks =
-    input
-    |> parse(parse_arcade() |> ops.many)
-    |> result.lazy_unwrap(fn() { panic })
-    |> list.filter_map(grab)
-    |> int.sum
+  input
+  |> parse(parse_arcade(False) |> ops.many)
+  |> result.lazy_unwrap(fn() { panic })
+  |> list.filter_map(grab)
+  |> int.sum
+}
+
+fn hard_div(a: Int, b: Int) -> Result(Int, Nil) {
+  case a % b {
+    0 -> Ok(a / b)
+    _ -> Error(Nil)
+  }
+}
+
+fn grab2(arcade: Arcade) -> Result(Int, Nil) {
+  let Arcade(a, b, x, y) = arcade
+  let d = b.x * a.y - a.x * b.y
+  let k = a.y * x - a.x * y
+
+  assert d != 0 as "Lin. dependent EEA solution not implemented"
+
+  use num_b <- result.try(hard_div(k, d))
+  use num_a <- result.try(hard_div(a.y * x - b.x * a.y * num_b, a.x * a.y))
+
+  assert num_a > 0 && num_b > 0
+  Ok(num_a * 3 + num_b)
 }
 
 pub fn part2(input: String) -> Int {
-  todo
+  let buttons =
+    input
+    |> parse(parse_arcade(True) |> ops.many)
+    |> result.lazy_unwrap(fn() { panic })
+
+  buttons
+  |> list.filter_map(grab2)
+  |> int.sum
 }
 
 pub fn main() {

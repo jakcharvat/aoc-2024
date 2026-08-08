@@ -22,6 +22,5 @@ pub fn part1_test() {
 }
 
 pub fn part2_test() {
-  day13.part2(input())
-  |> should.equal(todo)
+  should.be_true(day13.part2(input()) > 100)
 }
